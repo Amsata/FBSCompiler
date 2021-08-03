@@ -26,7 +26,9 @@ shinyUI(fluidPage(
               tabPanel("Settings",
                        
                         settings_module_ui("settings")
-              )
+              ),
+              tabPanel("SUA unbalanced",
+                       sua_unbalanced_module_ui("suaUn"))
               
               )
 ))

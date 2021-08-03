@@ -7,7 +7,7 @@ sua_unbalanced_module_ui <- function(id){
       tags$style(HTML("hr {border-top: 1px solid #000000;}"))
     ),
     titlePanel(
-      h1("SUA unbalanced",align='center')
+      h1("Production",align='center')
     ),
     
     

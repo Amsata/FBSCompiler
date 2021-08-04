@@ -11,25 +11,49 @@ sua_unbalanced_module_ui <- function(id){
     ),
     
     
-    tags$div(fluidRow(id=ns('aTextBox'), column(1,
-                                                actionButton(ns("home_bt"),"Home",
-                                                             class = "btn-success",
-                                                             style = "color: #fff;",
-                                                             icon = icon('arrow-left'),
-                                                             width = '100%')
-    ))),
+  fluidRow(
     
-    fluidRow(
-      column(
-        
-        width = 12,
-        # dataTableOutput(ns("Prod"))
-        # actionButton(ns("add"),"adds")
-        
-        
-        
+    column(6,
+           
+           tags$div(fluidRow(id=ns('aTextBox'), column(1,
+                                                       actionButton(ns("home_bt"),"Home",
+                                                                    class = "btn-success",
+                                                                    style = "color: #fff;",
+                                                                    icon = icon('arrow-left'),
+                                                                    width = '100%')
+           )))
+           
+           ),
+    column(6,
+           downloadButton(ns("downloadResults"),"Download Results"))
+  ),
+  tags$hr(),
+  fluidRow(
+    # style='padding:0px;background-color:#EBF5FB;',
+    # div(style = "font-size: 10px; padding: 14px 0px; margin:0%",
+    # h3(textOutput(session$ns(paste0("txt_",ids)))),
+    
+    column(12,offset = 0, tags$head(
+      tags$style(
+        HTML("
+          .datatables {
+              font-size: 1.5vw;
+              font-family: arial;
+          }
+
+          @media screen and (min-width: 1024px) {
+              .datatables {
+                  font-size: 12px;
+              }
+          }
+        ")
       )
+    ),
+           
+           DTOutput(ns("Dtab")) %>% withSpinner()
     )
+    # )
+  )
     
   )
 }
@@ -46,54 +70,60 @@ sua_unbalanced_module_server <- function(id,parent_session){
                    updateTabsetPanel(session=parent_session, "SuaFbs",selected = "Home")
                  })
                  
-                 crop=c("rice","wheat","millet","maize")
+                 crop=unique(sua_data$Item)[1:2]
                  
-                 for (ids in crop) {
-                   insertUI(
-                     selector = paste0('#',session$ns('aTextBox')),
-                     where = "afterEnd",
-                     ui = tagList(
-                       tags$hr(),
-                       h3(textOutput(session$ns(paste0("txt_",ids)))),
-                       fluidRow(
-                         column(12,
-                                DTOutput(session$ns(ids)) %>% withSpinner()
-                         )
-                       )
-                     )
-                   )
-                   
-                   
-                 }
-                 
-                 Map (function(i){
-                   output[[i]] <-renderDT(head(mtcars))},crop)
-                 
-                 Map(function(i){
-                   output[[i]] <-renderText(paste0(gsub("txt_","",i)))
-                 },paste0("txt_",crop))
+                 # for (ids in crop) {
+                 #   insertUI(
+                 #     selector = paste0('#',session$ns('aTextBox')),
+                 #     where = "afterEnd",
+                 #     ui = tagList(
+                 #       tags$hr(),
+                 #       # h3(textOutput(session$ns(paste0("txt_",ids)))),
+                 #       
+                 #       fluidRow(
+                 #         style='padding:0px;background-color:#EBF5FB;',
+                 #         # div(style = "font-size: 10px; padding: 14px 0px; margin:0%",
+                 #         h3(textOutput(session$ns(paste0("txt_",ids)))),
+                 #         
+                 #         column(12, offset = 0, style='padding:0px;background-color:#EBF5FB;',
+                 # 
+                 # 
+                 #                DTOutput(session$ns(ids)) %>% withSpinner()
+                 #         )
+                 #         # )
+                 #       )
+                 #     )
+                 #   )
+                 #   
+                 #   
+                 # }
+                 # 
+
+                 # Map(function(i){
+                 #   output[[i]] <-renderText(i)
+                 # },paste0("txt_",crop))
                  
                  
                  # trigegr to reload data from the "mtcars" table
-                 session$userData$mtcars_trigger <- reactiveVal(0)
+                 # session$userData$mtcars_trigger <- reactiveVal(0)
                  
                  # Read in "mtcars" table from the database
-                 cars <- reactive({
+                 # cars <- reactive({
                    
                    out <- NULL
                    
-                   out <- mtcars %>% 
+                   out <- sua_data %>% 
                      mutate(
-                       uid=1:nrow(mtcars))
+                       uid=1:nrow(sua_data))
                    
-                   out
+                   # out
                    
-                 })
+                 # })
                  
-                 car_table_prep <- reactiveVal(NULL)
+                 # car_table_prep <- reactiveVal(NULL)
                  
-                 observeEvent(cars(), {
-                   out <- cars()
+                 # observeEvent(cars(), {
+                 #   out <- cars()
                    
                    ids <- out$uid
                    
@@ -115,41 +145,47 @@ sua_unbalanced_module_server <- function(id,parent_session){
                      tibble(" " = actions),
                      out
                    )
-                   
-                   if (is.null(car_table_prep())) {
-                     # loading data into the table for the first time, so we render the entire table
-                     # rather than using a DT proxy
-                     car_table_prep(out)
-                     
-                   } else {
-                     
-                     # table has already rendered, so use DT proxy to update the data in the
-                     # table without rerendering the entire table
-                     replaceData(car_table_proxy, out, resetPaging = FALSE, rownames = FALSE)
-                     
-                   }
-                 })
+                 #   
+                 #   if (is.null(car_table_prep())) {
+                 #     # loading data into the table for the first time, so we render the entire table
+                 #     # rather than using a DT proxy
+                 #     car_table_prep(out)
+                 #     
+                 #   } else {
+                 #     
+                 #     # table has already rendered, so use DT proxy to update the data in the
+                 #     # table without rerendering the entire table
+                 #     replaceData(car_table_proxy, out, resetPaging = FALSE, rownames = FALSE)
+                 #     
+                 #   }
+                 # })
                  
                  
-                 Map (function(i){
-                   output[[i]] <-renderDT({
-                     req(car_table_prep())
-                     out <- car_table_prep()
+                 # Map (function(i){
+                   output[["Dtab"]] <-renderDT({
+                     # req(car_table_prep())
+                     # out <- car_table_prep()
                      
                      datatable(
-                       out,
+                       isolate(out) ,
+                       # filter = 'top',
                        rownames = FALSE,
-                       colnames = c('Model', 'Miles/Gallon', 'Cylinders', 'Displacement (cu.in.)',
-                                    'Horsepower', 'Rear Axle Ratio', 'Weight (lbs)', '1/4 Mile Time',
-                                    'Engine', 'Transmission', 'Forward Gears', 'Carburetors'),
+                       colnames = c('Model', names(sua_data)),
                        selection = "none",
+                       editable = list(target = "cell", disable = list(columns = c(0,2))),
                        class = "compact stripe row-border nowrap",
                        # Escape the HTML in all except 1st column (which has the buttons)
                        escape = -1,
-                       extensions = c("Buttons"),
+                       extensions = c("Buttons","RowGroup","FixedHeader","KeyTable"),
                        options = list(
+                         keys = TRUE,
+                         autoWidth = TRUE,
+                         fixedHeader = TRUE,
+                         pageLength = nrow(out),
+                         rowGroup = list(dataSrc = 1),
                          scrollX = TRUE,
                          dom = 'Bftip',
+                         autoFill = TRUE,
                          buttons = list(
                            list(
                              extend = "excel",
@@ -161,7 +197,8 @@ sua_unbalanced_module_server <- function(id,parent_session){
                            )
                          ),
                          columnDefs = list(
-                           list(targets = 0, orderable = FALSE)
+                           list(targets = 0, orderable = FALSE),
+                           list(visible=FALSE, targets=1)
                          ),
                          drawCallback = JS("function(settings) {
           // removes any lingering tooltips
@@ -171,9 +208,29 @@ sua_unbalanced_module_server <- function(id,parent_session){
                      )
                      
                    })
-                 },crop)
+                 # },crop)
                  
-                 
+                   # proxy5 = dataTableProxy('Dtab')
+                   
+                   
+                   dff <- reactiveValues(
+                     data=NA
+                   )
+                   
+                   
+                   observe({
+                     
+                     dff$data=out
+                   })
+                   
+                   observeEvent(input$Dtab_cell_edit, {
+                     out <<- editData(out, input$Dtab_cell_edit,rownames = FALSE)
+                   })
+                   
+                   output$downloadResults <- downloadHandler(
+                     filename = function(){paste("userTest.csv.csv", sep = "")},
+                     content = function(file){write.csv(as.data.frame(out[,2:length(names(out))]), file, row.names = FALSE)}
+                   )
                  
                })
 }

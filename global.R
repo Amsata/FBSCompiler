@@ -22,10 +22,11 @@ lapply(paste0("R/",list.files("R")),source)
 con=dbConnect(odbc::odbc(),"Pos")
 
 #Create DB tables and prefill them at the very first run of the App
+initializeDb(con) #to remove after 
 if(length(dbListTables(conn=con))==0){
-  SetupDatabase(con)
+initializeDb(con)  
 }
 
 
 
-# dbDisconnect(con)
+ dbDisconnect(con)

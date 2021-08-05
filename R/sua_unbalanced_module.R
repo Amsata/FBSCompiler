@@ -13,7 +13,7 @@ sua_unbalanced_module_ui <- function(id){
     
   fluidRow(
     
-    column(6,
+    column(12,
            
            tags$div(fluidRow(id=ns('aTextBox'), column(1,
                                                        actionButton(ns("home_bt"),"Home",
@@ -21,11 +21,11 @@ sua_unbalanced_module_ui <- function(id){
                                                                     style = "color: #fff;",
                                                                     icon = icon('arrow-left'),
                                                                     width = '100%')
-           )))
-           
            ),
-    column(6,
-           downloadButton(ns("downloadResults"),"Download Results"))
+           column(3,
+                  downloadButton(ns("downloadResults"),"Download Results"))))
+           
+           )
   ),
   tags$hr(),
   fluidRow(

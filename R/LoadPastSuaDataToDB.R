@@ -27,5 +27,6 @@ names(sua)=c(
 
 sua_data=sua %>% mutate(
   Item=paste0("[",measureditem_cpc,"] ",measureditemcpc_description),
-  Element=paste0("[",element_description,"] ",measure_element)
-)
+  Element=paste0("[",measure_element,"] ",element_description)
+) %>% select(Item,Element,Year=year_code,value) %>% filter(!is.na(value)) %>% 
+  spread(key=Year,value = value)

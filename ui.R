@@ -7,10 +7,12 @@
 #    http://shiny.rstudio.com/
 #
 
-library(shiny)
-
 # Define UI for application that draws a histogram
 shinyUI(fluidPage(
+  
+  tags$style(type = 'text/css', 
+             'li.active { font-weight: bold; font-size: 23px;color: red ;background: red;'),
+  
 
    navbarPage(title="FBS Compilation",id="SuaFbs",
               

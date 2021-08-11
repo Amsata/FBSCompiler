@@ -6,10 +6,7 @@ sua_unbalanced_module_ui <- function(id){
     tags$head(
       tags$style(HTML("hr {border-top: 1px solid #000000;}"))
     ),
-    titlePanel(
-      h1("Production",align='center')
-    ),
-    
+
     
   fluidRow(
     
@@ -22,8 +19,55 @@ sua_unbalanced_module_ui <- function(id){
                                                                     icon = icon('arrow-left'),
                                                                     width = '100%')
            ),
+           column(2,
+                  downloadButton(ns("downloadResults"),"Download Results")),
+           column(2,
+                  selectInput(
+                    inputId="si_sua_items",
+                    label="sua items",
+                    choices=fbs_item,
+                    selected = NULL,
+                    multiple = TRUE,
+                    selectize = TRUE,
+                    width = NULL,
+                    size = NULL
+                  )),
+           column(2,
+                  selectInput(
+                    inputId="si_years",
+                    label="sua years",
+                    choices=years,
+                    selected = NULL,
+                    multiple = TRUE,
+                    selectize = TRUE,
+                    width = NULL,
+                    size = NULL
+                  )),
+           column(1,
+                  actionButton(ns("pull_btn"),"Pull data",
+                               class = "btn-success",
+                               style = "color: #fff;font-size:11px;background-color:#85C1E9;",
+                               icon = icon('bezier-curve'),
+                               width = '100%')
+           ),
+           column(1,
+                  actionButton(ns("compile_btn"),"Compile",
+                               class = "btn-success",
+                               style = "color: #fff;font-size:11px;background-color:#85C1E9;",
+                               icon = icon('chalkboard-teacher'),
+                               width = '100%')
+           ),
            column(3,
-                  downloadButton(ns("downloadResults"),"Download Results"))))
+                  actionButton(ns("save_btn"),"Save to database",
+                               class = "btn-success",
+                               style = "color: #fff;font-size:11px;background-color:#85C1E9;",
+                               icon = icon('database'),
+                               width = '120px')
+           )
+           
+           
+           
+           ))
            
            )
   ),
@@ -70,7 +114,7 @@ sua_unbalanced_module_server <- function(id,parent_session){
                    updateTabsetPanel(session=parent_session, "SuaFbs",selected = "Home")
                  })
                  
-                 crop=unique(sua_data$Item)[1:2]
+                 # crop=unique(sua_data$Item)[1:2]
                  
                  # for (ids in crop) {
                  #   insertUI(
@@ -112,9 +156,13 @@ sua_unbalanced_module_server <- function(id,parent_session){
                    
                    out <- NULL
                    
+                   con=dbConnect(odbc::odbc(),"Pos")
+                   sua_data=DBI::dbReadTable(con,"sua_records")
+                   DBI::dbDisconnect(con)
+                   
                    out <- sua_data %>% 
                      mutate(
-                       uid=1:nrow(sua_data))
+                       uid=1:nrow(sua_data)) %>% slice(1:200)
                    
                    # out
                    
@@ -138,7 +186,7 @@ sua_unbalanced_module_server <- function(id,parent_session){
                    
                    # Remove the `uid` column. We don't want to show this column to the user
                    out <- out %>%
-                     select(-uid)
+                     dplyr::select(-uid)
                    
                    # Set the Action Buttons row to the first column of the `mtcars` table
                    out <- cbind(

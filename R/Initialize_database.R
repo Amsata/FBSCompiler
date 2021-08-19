@@ -18,10 +18,19 @@ vars=VarConfig()
   #get the sql file as string usable in R
   database_SQL <- getSQL(filepath=path)
   
+  query_lst=paste0(unlist(strsplit(database_SQL,split = ";")),";")
+  query_lst=query_lst[1:(length(query_lst)-1)]
+  
   #run the generated sql script
-  DBI::dbGetQuery(con,
-             database_SQL
-             )
+  # DBI::dbGetQuery(con,
+  #            database_SQL # change because Cannot insert multiple commands into a prepared statement(for heroku)
+  #            )
+  
+  lapply(query_lst, function(q){
+    DBI::dbGetQuery(con,
+                    q
+    )
+  })
   
   
   # pre-fill table "fbs_items" -------------------------------------------------
@@ -141,7 +150,7 @@ vars=VarConfig()
   country_tb=DBI::dbReadTable(con,"country")
   country_df_to_save=country_df %>% 
     anti_join(country_tb,by=vars@CountryCode) %>% 
-    filter(country_code!=206)
+    filter(country_code==206)
   #TO DO: check how to include vars@CountryCode in dplyr commands
   odbc::dbAppendTable(con,"country",country_df_to_save)
   
@@ -250,7 +259,7 @@ vars=VarConfig()
   
   # industrial domain
   industrial_df=sua_df %>% filter(element_code==5565) %>% mutate(domain_code="IND")
-  DBI::dbAppendTable(con,"sua_records",industrial_df)
+  # DBI::dbAppendTable(con,"sua_records",industrial_df)
   
   
   

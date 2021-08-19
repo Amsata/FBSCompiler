@@ -12,7 +12,8 @@ shinyServer(function(input, output,session) {
   settings_module_server("settings",parent_session=session)
   
   sua_unbalanced_module_server("suaUn",parent_session = session)
-  
+  # analytics_module_server("suaUn",parent_session = session)
+
   
   
 

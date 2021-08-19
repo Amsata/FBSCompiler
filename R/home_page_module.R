@@ -7,10 +7,10 @@ home_page_module_ui <- function(id){
     tags$head(
       tags$style(HTML("hr {border-top: 1px solid #000000;}"))
     ),
-    titlePanel(
-      h1("SUA/FBS compilation",align='center')
-    ),
-    
+    # titlePanel(
+    #   h1("SUA/FBS compilation",align='center')
+    # ),
+    # 
     fluidRow(
       
       column(

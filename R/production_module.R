@@ -6,11 +6,7 @@ production_module_ui <- function(id){
     tags$head(
       tags$style(HTML("hr {border-top: 1px solid #000000;}"))
     ),
-    titlePanel(
-      h1("Production",align='center')
-    ),
     
-
     tags$div(fluidRow(id=ns('aTextBox'), column(1,
                                                 actionButton(ns("home_bt"),"Home",
                                                              class = "btn-success",
